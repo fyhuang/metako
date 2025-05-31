@@ -1,0 +1,8 @@
+.mypy_cache
+.vscode
+.aider*
+
+__pycache__
+
+# Rust
+/target
