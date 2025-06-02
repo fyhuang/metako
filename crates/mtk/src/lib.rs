@@ -6,3 +6,5 @@ pub mod testing;
 // File tree
 pub mod repo_path;
 pub use repo_path::RepoPathBuf;
+
+pub mod file_tree;
