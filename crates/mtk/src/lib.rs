@@ -8,3 +8,4 @@ pub mod repo_path;
 pub use repo_path::RepoPathBuf;
 
 pub mod file_tree;
+pub use file_tree::{FsEntry, FileTree};
