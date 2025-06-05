@@ -1,7 +1,11 @@
 pub mod filetype;
+mod sqlite;
 
 // Helpers for testing
 pub mod testing;
+
+pub mod error;
+pub use error::CatalogError;
 
 // File tree
 pub mod repo_path;
