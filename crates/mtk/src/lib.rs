@@ -22,3 +22,8 @@ pub struct Entry {
     pub fs: file_tree::FsEntry,
     pub db: catalog::DbEntry,
 }
+
+// Vault
+pub mod vault;
+pub use vault::Vault;
+pub use vault::FilerConfig;
