@@ -1,0 +1,11 @@
+[package]
+name = "mtk_cli"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "mtk"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5.39", features = ["derive"] }
