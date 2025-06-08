@@ -27,3 +27,6 @@ pub struct Entry {
 pub mod vault;
 pub use vault::Vault;
 pub use vault::FilerConfig;
+
+// Browsing
+pub mod query;
