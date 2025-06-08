@@ -9,3 +9,11 @@ pub mod metadata_file;
 
 mod file_tree;
 pub use file_tree::FileTree;
+
+// Generated files
+mod generated_file;
+pub use generated_file::GeneratedFileType;
+pub use generated_file::GeneratedFile;
+
+mod generated_tree;
+pub use generated_tree::GeneratedTree;
