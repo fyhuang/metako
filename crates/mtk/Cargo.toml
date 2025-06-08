@@ -16,3 +16,5 @@ tempfile = "3.20.0"
 
 # For catalog
 rusqlite = { version = "0.36.0", features = ["bundled"] }
+
+regex = "1.11.1"  # search
