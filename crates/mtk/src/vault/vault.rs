@@ -5,7 +5,7 @@ use crate::vault::META_DIRNAME;
 use crate::CatalogError;
 use crate::catalog::Catalog;
 use crate::vault::FilerConfig;
-use crate::file_tree::FileTree;
+use crate::file_tree::{FileTree, GeneratedTree};
 
 fn same_mount_point(p1: &Path, p2: &Path) -> bool {
     use std::os::unix::fs::MetadataExt;
@@ -85,6 +85,10 @@ impl Vault {
     pub fn new_file_tree(&self) -> FileTree {
         let skip_paths = self.config.skip_paths.iter().map(|s| self.file_root.join(s)).collect();
         FileTree::new(&self.file_root, skip_paths, self.config.include_non_media)
+    }
+
+    pub fn new_generated_tree(&self) -> GeneratedTree {
+        GeneratedTree::new(&self.meta_root)
     }
 
     pub fn open_catalog(&self) -> Result<Catalog, CatalogError> {
