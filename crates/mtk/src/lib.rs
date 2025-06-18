@@ -28,5 +28,9 @@ pub mod vault;
 pub use vault::Vault;
 pub use vault::FilerConfig;
 
+
+// Databases for additional features
+pub mod userdata;
+
 // Browsing
 pub mod query;
