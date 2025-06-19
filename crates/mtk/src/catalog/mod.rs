@@ -6,3 +6,5 @@ pub use db_entry::DbEntry;
 
 pub mod sqlite_catalog;
 pub use sqlite_catalog::Catalog;
+
+pub mod generated_notes;
