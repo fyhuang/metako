@@ -34,3 +34,7 @@ pub mod userdata;
 
 // Browsing
 pub mod query;
+
+// Media-specific features
+pub mod preview;
+pub mod media;
