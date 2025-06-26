@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::{RepoPathBuf, FsEntry};
+use crate::{RepoPathBuf, Entry, FsEntry};
 use crate::file_tree::FileType;
 
 pub fn test_fs_entry(repo_path_str: &str) -> FsEntry {
@@ -19,6 +19,14 @@ pub fn test_fs_entry(repo_path_str: &str) -> FsEntry {
         size_bytes: 42,
         mod_time: chrono::DateTime::from_timestamp(0, 0).expect("from_timestamp"),
         is_metadata_file: false,
+    }
+}
+
+
+pub fn fake_entry(repo_path_str: &str) -> Entry {
+    Entry {
+        fs: test_fs_entry(repo_path_str),
+        db: crate::catalog::db_entry::DbEntry::default(i64::MIN, RepoPathBuf::from(repo_path_str)),
     }
 }
 
