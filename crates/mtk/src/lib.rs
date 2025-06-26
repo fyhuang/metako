@@ -38,3 +38,6 @@ pub mod query;
 // Media-specific features
 pub mod preview;
 pub mod media;
+
+// Jobs
+pub mod jobs;
