@@ -1,5 +1,12 @@
+import { markViewed } from './history.mts';
+
 export function setupVideoPlayer(): void {
     const mainVideo = document.querySelector('#mainvideo') as HTMLVideoElement;
+
+    // Update history
+    mainVideo.addEventListener('timeupdate', (event) => {
+        markViewed(mainVideo.currentTime, mainVideo.currentTime / mainVideo.duration);
+    });
 
     // YouTube-style keyboard shortcuts
     document.addEventListener('keyup', (event) => {

@@ -10,3 +10,4 @@ pub mod askama_tpl;
 // Handlers
 pub mod files;
 pub mod entry;
+pub mod history;
