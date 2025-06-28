@@ -6,6 +6,7 @@ use crate::CatalogError;
 use crate::catalog::Catalog;
 use crate::vault::FilerConfig;
 use crate::file_tree::{FileTree, GeneratedTree};
+use crate::userdata::HistoryDb;
 
 fn same_mount_point(p1: &Path, p2: &Path) -> bool {
     use std::os::unix::fs::MetadataExt;
@@ -95,6 +96,12 @@ impl Vault {
         let db_path = self.meta_root.join("catalog.db");
         //println!("Catalog at path {}", db_path.display());
         Catalog::open(&db_path)
+    }
+
+    pub fn open_history_db(&self) -> HistoryDb {
+        let db_path = self.meta_root.join("history.db");
+        println!("HistoryDb at path {}", db_path.display());
+        HistoryDb::new(&db_path)
     }
 }
 
