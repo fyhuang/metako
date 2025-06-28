@@ -1,0 +1,21 @@
+[package]
+name = "webui"
+version = "0.0.0"
+edition = "2024"
+
+[lib]
+name = "webui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "metako"
+path = "src/main.rs"
+
+
+[dependencies]
+mtk = { path = "../mtk" }
+
+tokio = "1.45.1"
+rocket = { version = "0.5.1", features = ["json"] }
+http-range = "0.1.5"
+chrono = "0.4.41"
