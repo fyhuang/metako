@@ -6,3 +6,6 @@ __pycache__
 
 # Rust
 /target
+
+# JS (frontend)
+/frontend/node_modules

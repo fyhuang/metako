@@ -1,0 +1,20 @@
+/* Main media frame */
+.fitscreen {
+    max-width: 100%;
+    max-height: 100vh;
+    margin: auto;
+}
+
+#mediaframe {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+
+    background: black;
+    color: white;
+}
+
+/* Editor */
+#entry_editor textarea {
+    height: 300px;
+}

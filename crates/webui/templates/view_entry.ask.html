@@ -1,0 +1,70 @@
+{% extends "base.ask.html" %}
+
+{% block page_title %}{{ entry.display_title }} - Metako{% endblock %}
+
+{############################### mediaframe #}
+
+{% block mediaframe %}
+
+{% if entry.is_video %}
+<div id="mediaframe">
+
+{% if let Some(video_player) = entry.video_player %}
+<video id="mainvideo" controls class="fitscreen"
+    {% if video_player.loop_and_autoplay %}loop autoplay{% endif %}
+>
+    <source src="{{video_player.main_source.file.url()}}"
+        type='{{video_player.main_source.type_with_codecs|safe}}'>
+    Video not supported...
+</video>
+{% endif %}
+
+</div>
+{% endif %}
+
+{% if entry.is_image %}
+<div id="mediaframe">
+
+<img id="mainimg" class="fitscreen" src="/raw/{{entry.repo_path|urlencode_parts}}">
+
+</div>
+{% endif %}
+
+{% endblock %}
+
+{############################### content #}
+
+{% block content %}
+
+<div class="container">
+<h1 class="display-1">{{ entry.display_title }}</h1>
+
+{{ parent_crumbs|safe }}
+
+<pre><i class="bi bi-link-45deg"></i><a href="/raw/{{entry.repo_path|urlencode_parts}}">{{entry.repo_path}}</a></pre>
+
+<dl class="row">
+    <dt class="col-3">Local Paths</dt>
+    <dd class="col-9">
+        <p><a href="file://{{local_path_prefix}}/{{entry.repo_path}}" onclick="window.writeToClipboard('{{local_path_prefix}}/{{entry.repo_path}}'); event.preventDefault()"><i class="bi bi-clipboard-plus"></i> {{local_path_prefix}}/{{entry.repo_path}}</a></p>
+    </dd>
+
+    {% if !entry.catalog.linked_urls().is_empty() %}
+    <dt class="col-3">External Links</dt>
+    <dd class="col-9">
+        {% for url in entry.catalog.linked_urls() %}
+        <p><a href="{{url}}" referrerpolicy="no-referrer">{{url}}</a></p>
+        {% endfor %}
+    </dd>
+    {% endif %}
+</dl>
+
+</div> <!-- container -->
+
+
+<script>
+'use strict';
+window.mtkEntry = {{ entry.as_json()|safe }};
+</script>
+
+{% endblock %}

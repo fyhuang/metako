@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use rocket::{http::ContentType, response::content, State};
 
-use mtk::{file_tree::GeneratedFile, RepoPathBuf, Vault};
+use mtk::{RepoPathBuf, Vault};
 
 use crate::raw_file_responder::RawFileResponder;
 
@@ -41,4 +41,19 @@ pub async fn raw_file_get(path: PathBuf, stash: &State<Vault>) -> RawFileRespond
 #[head("/raw/<path..>")]
 pub async fn raw_file_head(path: PathBuf, stash: &State<Vault>) -> RawFileResponder {
     get_raw_file_responder(path, stash)
+}
+
+#[get("/static/index.js")]
+pub async fn static_index_js() -> content::RawJavaScript<&'static str> {
+    content::RawJavaScript(include_str!("../../../frontend/dist/index.js"))
+}
+
+#[get("/static/index.js.map")]
+pub async fn static_index_js_map() -> &'static str {
+    include_str!("../../../frontend/dist/index.js.map")
+}
+
+#[get("/static/index.css")]
+pub async fn static_index_css() -> content::RawCss<&'static str> {
+    content::RawCss(include_str!("../../../frontend/dist/index.css"))
 }

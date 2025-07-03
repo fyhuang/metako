@@ -1,0 +1,11 @@
+<ol class="breadcrumb">
+
+{% for crumb in crumbs %}
+<li class="breadcrumb-item">
+    <a href="/entry/{{crumb.repo_path|urlencode_parts}}">{{ crumb.dir_name }}</a>
+</li>
+{% endfor %}
+
+<li class="breadcrumb-item active">{{ file_name }}</li>
+
+</ol>

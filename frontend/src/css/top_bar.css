@@ -1,0 +1,12 @@
+header {
+    margin: 0 0 10px 0;
+    padding: 10px 0 10px 0;
+
+    background: #444;
+    color: white;
+}
+
+header a {
+    color: #ffffff;
+    margin-right: 12px;
+}

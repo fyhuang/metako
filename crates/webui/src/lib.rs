@@ -4,5 +4,9 @@
 mod range_limited_file;
 pub mod raw_file_responder;
 
+// Templates
+pub mod askama_tpl;
+
 // Handlers
 pub mod files;
+pub mod entry;

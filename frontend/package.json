@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "check": "tsc --noEmit",
+    "esbuild-js": "esbuild src/index.mts --bundle --minify --sourcemap --outfile=dist/index.js",
+    "esbuild-css": "esbuild src/css/index.css --bundle --outfile=dist/index.css",
+    "build": "npm run check && npm run esbuild-js && npm run esbuild-css"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32",
+    "esbuild": "0.24.2",
+    "typescript": "^5.7.2"
+  }
+}
