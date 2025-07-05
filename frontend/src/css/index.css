@@ -1,5 +1,6 @@
 @import 'top_bar.css';
 @import 'entry.css';
+@import 'entry_list.css';
 
 body {
     padding-bottom: 50px;

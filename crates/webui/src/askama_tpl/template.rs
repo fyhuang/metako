@@ -6,6 +6,27 @@ use mtk::Entry;
 use super::renderers;
 use super::filters;
 use super::partial;
+use super::partial::ListingLayout;
+
+#[derive(Template)]
+#[template(path = "dir_index.ask.html")]
+pub struct DirIndexTemplate {
+    pub entry: renderers::EntryRenderer,
+
+    pub parent_crumbs: partial::ParentCrumbsPartial,
+    pub dir_listing: partial::DirListingPartial,
+}
+
+impl DirIndexTemplate {
+    pub fn new(dir_entry: &Entry, contents: &Vec<Entry>, layout: ListingLayout) -> DirIndexTemplate {
+        DirIndexTemplate {
+            entry: renderers::EntryRenderer::from(&dir_entry),
+
+            parent_crumbs: partial::ParentCrumbsPartial::from(dir_entry.fs.repo_path.clone()),
+            dir_listing: partial::DirListingPartial::from(contents, layout),
+        }
+    }
+}
 
 #[derive(Template)]
 #[template(path = "view_entry.ask.html")]

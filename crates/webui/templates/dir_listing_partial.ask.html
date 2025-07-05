@@ -1,0 +1,49 @@
+{% if layout == ListingLayout::GalleryGrid %}
+<div class="grid">
+    {% for entry in entries %}
+    <div class="grid_entry">
+        <a href="/entry/{{entry.repo_path|urlencode_parts}}">
+            <img class="preview_img" loading="lazy" src="/preview/{{entry.entry_id}}">
+            <div class="small_title">{{entry.display_title}}</div>
+            <div class="small_filename">{{entry.file_name}}</div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else if layout == ListingLayout::CompactCardGrid %}
+<div class="cc-grid">
+    {% for entry in entries %}
+    <a class="cc-card" href="/entry/{{entry.repo_path|urlencode_parts}}">
+        <div class="cc-card-title-row">
+            <div class="cc-card-title-container">
+                <div class="cc-row cc-icon-row">
+                    {# Filetype icon #}
+                    {% if entry.file_type.is_dir %}
+                        <span class="cc-icon"><i class="bi bi-folder"></i></span>
+                    {% else if entry.is_image %}
+                        <span class="cc-icon"><i class="bi bi-image"></i></span>
+                    {% else if entry.is_video %}
+                        <span class="cc-icon"><i class="bi bi-play-btn"></i></span>
+                    {% else %}
+                        <span class="cc-icon"><i class="bi bi-file-earmark"></i></span>
+                    {% endif %}
+
+                    {# Rating #}
+                    {% if let Some(rating) = entry.catalog.rating() %}
+                    <span class="cc-icon">
+                        <i class="bi bi-star"></i>
+                        {{ rating }}
+                    </span>
+                    {% endif %}
+                </div>
+                <h1 class="cc-row">{{entry.display_title}}</h1>
+            </div>
+        </div>
+        <div class="cc-card-footer cc-row">
+            <i class="bi bi-link-45deg"></i>
+            {{entry.file_name}}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,27 @@
+{% extends "base.ask.html" %}
+
+{% block page_title %}{{ entry.display_title }} - Metako{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<h1>{{ entry.display_title }}</h1>
+
+{{ parent_crumbs|safe }}
+
+<p><a href="?layout=grid">Grid</a> | <a href="?layout=cc">Compact</a></p>
+
+
+{{ dir_listing|safe }}
+
+</div> <!-- container -->
+
+<div id="float-preview-box">
+    <img src="" id="float-preview-img" />
+</div>
+
+</body>
+</html>
+
+{% endblock %}

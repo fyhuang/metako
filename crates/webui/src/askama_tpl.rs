@@ -4,9 +4,12 @@ mod renderers;
 mod partial;
 mod template;
 
+// TODO(fyhuang): make this private
+pub use partial::ListingLayout;
 pub use renderers::EntryRenderer;
 pub use renderers::VideoPlayerRenderer;
 
+pub use template::DirIndexTemplate;
 pub use template::ViewEntryTemplate;
 
 
