@@ -1,6 +1,7 @@
 @import 'top_bar.css';
 @import 'entry.css';
 @import 'entry_list.css';
+@import 'gallery_grid.css';
 
 body {
     padding-bottom: 50px;

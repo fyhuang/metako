@@ -1,0 +1,27 @@
+/* Gallery grid */
+.grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (width <= 500px) {
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+}
+
+.small_title {
+    font-family: "Verela", sans-serif;
+    font-size: 12px;
+    overflow-wrap: break-word;
+}
+
+.small_filename {
+    font-family: "DM Mono", monospace;
+    font-size: 9px;
+    overflow-wrap: anywhere;
+    color: #555;
+    text-decoration: none;
+}
+    
