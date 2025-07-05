@@ -33,6 +33,7 @@ pub async fn view_entry(
         todo!("not implemented");
     } else {
         println!("File entry at {}", repo_path);
+        let mut history_db = stash.open_history_db();
         let mut entry_renderer = askama_tpl::EntryRenderer::from(&entry);
         if filetype::is_video(&entry.fs.file_path) {
             entry_renderer.video_player = Some(askama_tpl::VideoPlayerRenderer::new(&entry));
@@ -41,6 +42,7 @@ pub async fn view_entry(
             &stash.config,
             &entry,
             entry_renderer,
+            history_db.get(entry.db.id).unwrap(),
         );
         content::RawHtml(template.render().unwrap())
     }

@@ -1,0 +1,18 @@
+{% match history.last_viewed_date %}
+{% when Some with (last_viewed_date) %}
+<p>Last viewed: {{last_viewed_date}}</p>
+{% when None %}
+{% endmatch %}
+
+{% match history.video_history %}
+{% when Some with (video_history) %}
+<p>Farthest viewed: {{video_history.farthest_ts}} seconds, {{video_history.farthest_ts_ratio}} of video</p>
+{% when None %}
+{% endmatch %}
+
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="History controls">
+    <div class="btn-group me-2">
+        <button type="button" class="btn btn-outline-secondary"
+            onClick="clearViewed()">Clear View History</button>
+    </div>
+</div>

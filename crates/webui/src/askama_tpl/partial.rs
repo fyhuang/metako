@@ -46,3 +46,10 @@ impl ParentCrumbsPartial {
         }
     }
 }
+
+
+#[derive(Template)]
+#[template(path = "history_partial.ask.html")]
+pub struct HistoryPartial {
+    pub history: mtk::userdata::ViewHistory,
+}

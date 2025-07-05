@@ -15,6 +15,7 @@ pub struct ViewEntryTemplate {
     pub local_path_prefix: String,
 
     pub parent_crumbs: partial::ParentCrumbsPartial,
+    pub history: partial::HistoryPartial,
 }
 
 impl ViewEntryTemplate {
@@ -22,6 +23,7 @@ impl ViewEntryTemplate {
         config: &FilerConfig,
         entry: &Entry,
         entry_renderer: renderers::EntryRenderer,
+        history: mtk::userdata::ViewHistory,
     ) -> ViewEntryTemplate {
         ViewEntryTemplate {
             entry: entry_renderer,
@@ -36,6 +38,7 @@ impl ViewEntryTemplate {
                 .unwrap_or("".to_string()),
 
             parent_crumbs: partial::ParentCrumbsPartial::from(entry.fs.repo_path.clone()),
+            history: partial::HistoryPartial { history },
         }
     }
 }
