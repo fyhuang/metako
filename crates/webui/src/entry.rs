@@ -44,6 +44,10 @@ pub async fn view_entry(
             entry_renderer,
             history_db.get(entry.db.id).unwrap(),
         );
+        if filetype::is_image(&entry.fs.file_path) {
+            // TODO(fyhuang): should we do this in JS instead?
+            history_db.mark_viewed(entry.db.id, None).unwrap();
+        }
         content::RawHtml(template.render().unwrap())
     }
 }
