@@ -14,6 +14,7 @@ fn mount_all_routes(
             routes![
                 entry::view_entry,
                 entry::view_entry_by_id,
+                entry::index,
             ],
         )
         .mount(prefix, routes![files::static_index_js, files::static_index_css])
