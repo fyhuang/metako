@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use clap::{command, Parser};
 
+mod jobs;
+
 #[derive(clap::Args)]
 struct InitCommand {
     /// Path to the .mtk directory
@@ -29,6 +31,7 @@ impl InitCommand {
 #[derive(Parser)]
 enum Commands {
     Init(InitCommand),
+    RunJobs(jobs::RunJobsCommand),
 }
 
 #[derive(Parser)]
@@ -43,5 +46,6 @@ fn main() {
 
     match &cli.command {
         Commands::Init(init) => init.run(),
+        Commands::RunJobs(run_jobs) => run_jobs.run(&mtk::Vault::from_cwd()),
     }
 }

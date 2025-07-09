@@ -33,6 +33,7 @@ pub use vault::FilerConfig;
 pub mod userdata;
 
 // Browsing
+pub mod browse;
 pub mod query;
 
 // Media-specific features

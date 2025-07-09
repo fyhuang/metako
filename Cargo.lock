@@ -884,9 +884,10 @@ dependencies = [
 
 [[package]]
 name = "mtk_cli"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "clap",
+ "mtk",
 ]
 
 [[package]]
