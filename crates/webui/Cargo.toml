@@ -23,3 +23,5 @@ rocket = { version = "0.5.1", features = ["json"] }
 http-range = "0.1.5"
 chrono = "0.4.41"
 askama = "0.14.0"
+
+base64 = "0.22.1"  # For preview

@@ -15,6 +15,7 @@
     {% for entry in entries %}
     <a class="cc-card" href="/entry/{{entry.repo_path|urlencode_parts}}">
         <div class="cc-card-title-row">
+            <img class="cc-card-preview" loading="lazy" src="/preview/{{entry.entry_id}}">
             <div class="cc-card-title-container">
                 <div class="cc-row cc-icon-row">
                     {# Filetype icon #}

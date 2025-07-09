@@ -2,7 +2,7 @@
 extern crate rocket;
 
 use mtk::Vault;
-use webui::{entry, files, history};
+use webui::{entry, files, preview, history};
 
 fn mount_all_routes(
     builder: rocket::Rocket<rocket::Build>,
@@ -17,6 +17,7 @@ fn mount_all_routes(
                 entry::index,
             ],
         )
+        .mount(prefix, routes![preview::preview_get])
         .mount(prefix, routes![files::static_index_js, files::static_index_css])
         .mount(prefix, routes![files::raw_file_get, files::raw_file_head])
         .mount(

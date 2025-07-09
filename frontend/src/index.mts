@@ -1,5 +1,11 @@
 import { currEntry } from './entry.mts';
+import * as entry_list from './entry_list.mts';
 import * as video from './video.mts';
+
+addEventListener('DOMContentLoaded', () => {
+    // TODO: only if the layout is cc-grid
+    entry_list.setupPreviewFromCcGrid();
+});
 
 // Set up video stuff
 addEventListener('DOMContentLoaded', () => {
