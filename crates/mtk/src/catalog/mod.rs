@@ -8,3 +8,4 @@ pub mod sqlite_catalog;
 pub use sqlite_catalog::Catalog;
 
 pub mod generated_notes;
+pub mod edit;

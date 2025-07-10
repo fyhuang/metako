@@ -11,4 +11,6 @@ pub mod askama_tpl;
 pub mod files;
 pub mod entry;
 pub mod preview;
+
 pub mod history;
+pub mod edit;

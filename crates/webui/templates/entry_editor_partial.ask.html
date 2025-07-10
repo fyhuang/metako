@@ -1,0 +1,55 @@
+<div id="entry_editor">
+
+<!-- Quick rating buttons -->
+<form id="rating_inc" method="POST" action="/edit/{{entry_id}}">
+    <textarea style="display: none" name="original_user_notes">{{ user_json }}</textarea>
+    <input type="hidden" name="field" value="rating" />
+    <input type="hidden" name="number_inc" value="1" />
+</form>
+
+<form id="rating_dec" method="POST" action="/edit/{{entry_id}}">
+    <textarea style="display: none" name="original_user_notes">{{ user_json }}</textarea>
+    <input type="hidden" name="field" value="rating" />
+    <input type="hidden" name="number_inc" value="-1" />
+</form>
+
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Quick edit controls">
+    <div class="btn-group me-2">
+        <button type="submit" class="btn btn-outline-primary" form="rating_inc">+1</button>
+        <button type="submit" class="btn btn-outline-danger" form="rating_dec">-1</button>
+    </div>
+</div>
+
+<!-- Edit form -->
+<div class="accordion">
+<div class="accordion-item">
+
+<h2 class="accordion-header">
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#editor_collapse">
+Edit JSON
+</button>
+</h2>
+
+<div id="editor_collapse" class="accordion-collapse collapse">
+<div class="accordion-body">
+
+<form method="POST" action="/edit/{{entry_id}}">
+    <textarea style="display: none" name="original_user_notes">{{ user_json }}</textarea>
+    <input type="hidden" name="replace_entire_user" value="true" />
+
+    <div class="mb-3">
+        <label>JSON</label>
+        <textarea class="form-control" name="contents">{{ user_json }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <input type="submit" class="form-control" style="max-width: 150px" value="Submit">
+    </div>
+</form>
+
+</div>
+</div> <!-- accordion-body -->
+</div>
+</div> <!-- accordion -->
+
+</div> <!-- entry_editor -->

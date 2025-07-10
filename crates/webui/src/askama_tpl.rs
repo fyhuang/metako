@@ -2,6 +2,7 @@ mod filters;
 
 mod renderers;
 mod partial;
+mod edit;
 mod template;
 
 // TODO(fyhuang): make this private
@@ -12,6 +13,7 @@ pub use renderers::VideoPlayerRenderer;
 pub use template::DirIndexTemplate;
 pub use template::ViewEntryTemplate;
 
+pub use edit::EntryEditorPartial;
 
 fn nibble_to_hex(nibble: u8) -> u8 {
     debug_assert!(nibble < 16);

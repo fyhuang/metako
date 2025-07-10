@@ -2,7 +2,7 @@
 extern crate rocket;
 
 use mtk::Vault;
-use webui::{entry, files, preview, history};
+use webui::{entry, files, preview, history, edit};
 
 fn mount_all_routes(
     builder: rocket::Rocket<rocket::Build>,
@@ -24,6 +24,7 @@ fn mount_all_routes(
             prefix,
             routes![history::api_video_history, history::api_clear_history],
         )
+        .mount(prefix, routes![edit::edit_entry])
 }
 
 #[rocket::main]
