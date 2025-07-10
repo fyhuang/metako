@@ -40,7 +40,10 @@ fn run_job_scan_media(stash: &mtk::Vault, job_type: &str, search_root: &RepoPath
     let file_tree = stash.new_file_tree();
     let mut catalog = stash.open_catalog().expect("open_catalog");
 
+    println!("Scanning for media files in {}", search_root);
     let listing = mtk::browse::list_recursive(&mut catalog, &file_tree, search_root).expect("list_recursive");
+
+    println!("Running jobs on {} entries", listing.visible.len());
     run_job_on_entries(stash, job_type, listing.visible.into_iter().filter(|entry| entry.fs.file_type.is_file));
 }
 
