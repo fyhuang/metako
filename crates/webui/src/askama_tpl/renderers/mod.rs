@@ -5,3 +5,6 @@ mod file_renderer;
 
 mod video_player_renderer;
 pub use video_player_renderer::VideoPlayerRenderer;
+
+mod video_stats_renderer;
+pub use video_stats_renderer::VideoStatsRenderer;

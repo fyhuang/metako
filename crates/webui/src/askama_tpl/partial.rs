@@ -34,7 +34,9 @@ impl DirListingPartial {
     pub fn from(entries: &Vec<Entry>, layout: ListingLayout) -> DirListingPartial {
         let start_time = std::time::Instant::now();
         let renderers: Vec<_> = entries.iter().map(|entry| {
-            EntryRenderer::from(&entry)
+            let mut r = EntryRenderer::from(&entry);
+            r.render_video_stats(&entry);
+            r
         }).collect();
         println!("Rendered {} entries in {:?}", renderers.len(), start_time.elapsed());
 

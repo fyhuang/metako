@@ -32,6 +32,7 @@ pub struct EntryRenderer {
     pub catalog: catalog::DbEntry,
 
     // Media type-specific fields
+    pub video_stats: Option<super::VideoStatsRenderer>,
     pub video_player: Option<super::VideoPlayerRenderer>,
 }
 
@@ -49,7 +50,14 @@ impl EntryRenderer {
             is_image: filetype::is_image(&entry.fs.file_path),
             is_video: filetype::is_video(&entry.fs.file_path),
             catalog: entry.db.clone(),
+            video_stats: None,
             video_player: None,
+        }
+    }
+
+    pub fn render_video_stats(&mut self, entry: &Entry) {
+        if self.is_video {
+            self.video_stats = Some(super::VideoStatsRenderer::from(entry));
         }
     }
 

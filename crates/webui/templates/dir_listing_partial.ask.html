@@ -23,8 +23,17 @@
                         <span class="cc-icon"><i class="bi bi-folder"></i></span>
                     {% else if entry.is_image %}
                         <span class="cc-icon"><i class="bi bi-image"></i></span>
-                    {% else if entry.is_video %}
-                        <span class="cc-icon"><i class="bi bi-play-btn"></i></span>
+                    {% else if let Some(stats) = entry.video_stats %}
+                        <span class="cc-icon">
+                            {% if stats.vertical %}<i class="bi bi-file-earmark-play"></i>{% else %}<i class="bi bi-play-btn"></i>{% endif %}
+                            {{ stats.duration_str }}
+                        </span>
+
+                        <span class="cc-icon"><i class="bi bi-badge-{{stats.resolution_label}}"></i></span>
+
+                        {% if stats.is_vr %}
+                            <span class="cc-icon"><i class="bi bi-vr"></i></span>
+                        {% endif %}
                     {% else %}
                         <span class="cc-icon"><i class="bi bi-file-earmark"></i></span>
                     {% endif %}
