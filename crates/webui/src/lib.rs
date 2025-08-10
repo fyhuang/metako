@@ -14,3 +14,4 @@ pub mod preview;
 
 pub mod history;
 pub mod edit;
+pub mod query;
