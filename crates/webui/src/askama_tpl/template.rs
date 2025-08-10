@@ -10,6 +10,22 @@ use super::partial::ListingLayout;
 use super::edit;
 
 #[derive(Template)]
+#[template(path = "entry_list.ask.html")]
+pub struct EntryListTemplate {
+    pub title: String,
+    pub entry_list: partial::DirListingPartial,
+}
+
+impl EntryListTemplate {
+    pub fn new(title: &str, contents: &Vec<Entry>, layout: ListingLayout) -> EntryListTemplate {
+        EntryListTemplate {
+            title: title.to_string(),
+            entry_list: partial::DirListingPartial::from(contents, layout),
+        }
+    }
+}
+
+#[derive(Template)]
 #[template(path = "dir_index.ask.html")]
 pub struct DirIndexTemplate {
     pub entry: renderers::EntryRenderer,

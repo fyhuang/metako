@@ -1,0 +1,22 @@
+{% extends "base.ask.html" %}
+
+{% block page_title %}{{ title }} - Metako{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+<h1>{{ title }}</h1>
+
+{{ entry_list|safe }}
+
+</div> <!-- container -->
+
+<div id="float-preview-box">
+    <img src="" id="float-preview-img" />
+</div>
+
+</body>
+</html>
+
+{% endblock %}
