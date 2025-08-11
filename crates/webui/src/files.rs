@@ -1,8 +1,8 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use rocket::{http::ContentType, response::content, State};
 
-use mtk::{RepoPathBuf, Vault};
+use mtk::{file_tree::GeneratedFile, RepoPathBuf, Vault};
 
 use crate::raw_file_responder::RawFileResponder;
 
@@ -33,6 +33,28 @@ fn get_raw_file_responder(path: PathBuf, stash: &Vault) -> RawFileResponder {
     }
 }
 
+fn local_raw_file_responder(path: &Path) -> RawFileResponder {
+    let file = std::fs::File::open(path).expect("File::open");
+    let metadata = std::fs::metadata(path).expect("metadata");
+
+    let extension = path.extension()
+        .and_then(|s| s.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+    let content_type = match extension.as_ref() {
+        "mkv" => ContentType::new("video", "webm"),
+        _ => ContentType::from_extension(&extension).unwrap_or(ContentType::Plain),
+    };
+
+    RawFileResponder {
+        file: file,
+        size_bytes: metadata.len(),
+        mod_time: metadata.modified().expect("modified").into(),
+        content_type: content_type,
+        cache_control: None,
+    }
+}
+
 #[get("/raw/<path..>")]
 pub async fn raw_file_get(path: PathBuf, stash: &State<Vault>) -> RawFileResponder {
     get_raw_file_responder(path, stash)
@@ -41,6 +63,28 @@ pub async fn raw_file_get(path: PathBuf, stash: &State<Vault>) -> RawFileRespond
 #[head("/raw/<path..>")]
 pub async fn raw_file_head(path: PathBuf, stash: &State<Vault>) -> RawFileResponder {
     get_raw_file_responder(path, stash)
+}
+
+#[get("/generated/<entry_id>/<file_type>/<metadata>/<extension>")]
+pub async fn generated_file_get(
+    entry_id: i64,
+    file_type: String,
+    metadata: String,
+    extension: String,
+    stash: &State<Vault>,
+) -> RawFileResponder {
+    // TODO(fyhuang): tokio
+    let gen_tree = stash.new_generated_tree();
+
+    let gfile = GeneratedFile {
+        entry_id: entry_id,
+        file_type: mtk::file_tree::GeneratedFileType::from_two_letter_code(&file_type)
+            .expect("from_two_letter_code"),
+        metadata: metadata,
+        extension: extension.clone(),
+    };
+    let fs_path = gen_tree.path_to_generated_file(&gfile);
+    local_raw_file_responder(&fs_path)
 }
 
 #[get("/static/index.js")]

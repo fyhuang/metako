@@ -20,6 +20,7 @@ fn mount_all_routes(
         .mount(prefix, routes![preview::preview_get])
         .mount(prefix, routes![files::static_index_js, files::static_index_css])
         .mount(prefix, routes![files::raw_file_get, files::raw_file_head])
+        .mount(prefix, routes![files::generated_file_get])
         .mount(prefix, routes![query::surprise, query::search])
         .mount(
             prefix,
