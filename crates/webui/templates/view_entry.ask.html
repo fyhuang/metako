@@ -15,6 +15,11 @@
 >
     <source src="{{video_player.main_source.file.url()}}"
         type='{{video_player.main_source.type_with_codecs|safe}}'>
+    {% for af in video_player.alt_formats %}
+        <source src="{{af.file.url()}}"
+            type='{{af.type_with_codecs|safe}}'>
+    {% endfor %}
+
     Video not supported...
 </video>
 {% endif %}

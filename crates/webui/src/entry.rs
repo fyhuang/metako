@@ -40,7 +40,7 @@ pub async fn view_entry(
         let mut history_db = stash.open_history_db();
         let mut entry_renderer = askama_tpl::EntryRenderer::from(&entry);
         if filetype::is_video(&entry.fs.file_path) {
-            entry_renderer.video_player = Some(askama_tpl::VideoPlayerRenderer::new(&entry));
+            entry_renderer.video_player = Some(askama_tpl::VideoPlayerRenderer::new(&stash, &entry));
         }
         let template = askama_tpl::ViewEntryTemplate::new(
             &stash.config,
