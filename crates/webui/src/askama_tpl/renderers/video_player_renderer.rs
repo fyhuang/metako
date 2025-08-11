@@ -41,15 +41,23 @@ impl VideoSourceRenderer {
 }
 
 #[derive(Clone, Serialize)]
+pub struct SubtitleRenderer {
+    pub file: ServableFileRenderer,
+    pub srclang: String,
+}
+
+#[derive(Clone, Serialize)]
 pub struct VideoPlayerRenderer {
     pub main_source: VideoSourceRenderer,
     pub alt_formats: Vec<VideoSourceRenderer>,
+    pub vtt_subtitles: Vec<SubtitleRenderer>,
 
     pub loop_and_autoplay: bool,
 }
 
 impl VideoPlayerRenderer {
     pub fn new(vault: &mtk::Vault, entry: &Entry) -> VideoPlayerRenderer {
+        let file_tree = vault.new_file_tree();
         let gen_tree = vault.new_generated_tree();
         let video_info = video::get_video_info(&entry.fs.file_path).expect("get_video_info");
 
@@ -64,9 +72,42 @@ impl VideoPlayerRenderer {
             ));
         }
 
+        let mut vtt_subtitles = Vec::new();
+        for subtitle in video::find_all_vtt_subtitles(&entry.fs.file_path, &gen_tree, entry.db.id) {
+            if let video::SubtitleSource::WebVTTFile(path) = &subtitle.source {
+                if gen_tree.is_generated(&path) {
+                    vtt_subtitles.push(SubtitleRenderer {
+                        // TODO: better if we could just return GeneratedFile from video::find_all_vtt_subtitles
+                        file: ServableFileRenderer::GeneratedFile(GeneratedFileRenderer {
+                            entry_id: entry.db.id,
+                            file_type_2l: mtk::file_tree::GeneratedFileType::Subtitle
+                                .to_two_letter_code()
+                                .to_string(),
+                            metadata: subtitle.lang_country.clone(),
+                            extension: "vtt".to_string(),
+                        }),
+                        srclang: subtitle.lang_country.clone(),
+                    });
+                } else {
+                    let repo_path = file_tree
+                        .full_to_repo_path(&path)
+                        .expect("full_to_repo_path");
+                    vtt_subtitles.push(SubtitleRenderer {
+                        file: ServableFileRenderer::RawFile(RawFileRenderer {
+                            repo_path: repo_path.to_string(),
+                        }),
+                        srclang: subtitle.lang_country.clone(),
+                    })
+                }
+            } else {
+                panic!("Only WebVTTFile can be rendered, not {:?}", subtitle);
+            }
+        }
+
         VideoPlayerRenderer {
             main_source: VideoSourceRenderer::from_entry(entry, &video_info),
             alt_formats: alt_formats,
+            vtt_subtitles: vtt_subtitles,
 
             loop_and_autoplay: video_info.duration_secs <= 180.,
         }

@@ -19,6 +19,9 @@
         <source src="{{af.file.url()}}"
             type='{{af.type_with_codecs|safe}}'>
     {% endfor %}
+    {% for sub in video_player.vtt_subtitles %}
+        <track kind="subtitles" src="{{sub.file.url()}}" srclang="{{sub.srclang}}" />
+    {% endfor %}
 
     Video not supported...
 </video>
