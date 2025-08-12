@@ -1,9 +1,14 @@
-use std::collections::HashMap;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use base64::{Engine as _, engine::general_purpose};
 
 use mtk::Entry;
+
+fn is_default<T>(value: &T) -> bool
+where
+    T: PartialEq + Default,
+{
+    *value == T::default()
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum SortBy {
@@ -33,17 +38,24 @@ impl Default for SortOrder {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct FilterCriteria {
-    pub file_types: Option<Vec<String>>,
-    pub rating_range: Option<(i64, i64)>,
-    // TODO: filter by user notes
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FilterSortOptions {
+    // Sort options
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_default")]
     pub sort_by: SortBy,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "is_default")]
     pub sort_order: SortOrder,
-    pub filter: FilterCriteria,
+
+    // Filter options
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter_file_types: Option<Vec<String>>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter_rating: Option<(i64, i64)>,
+
+    // TODO: filter by user notes
 }
 
 impl FilterSortOptions {
@@ -92,16 +104,6 @@ impl FilterSortOptions {
     }
 }
 
-impl Default for FilterSortOptions {
-    fn default() -> Self {
-        FilterSortOptions {
-            sort_by: SortBy::Name,
-            sort_order: SortOrder::Asc,
-            filter: FilterCriteria::default(),
-        }
-    }
-}
-
 impl FilterSortOptions {
     pub fn to_base64(&self) -> Result<String, serde_json::Error> {
         let json = serde_json::to_string(self)?;
@@ -123,7 +125,7 @@ impl FilterSortOptions {
     /// Check if a single entry matches the filter criteria
     fn matches_filter(&self, entry: &Entry) -> bool {
         // File type filter
-        if let Some(ref file_types) = self.filter.file_types {
+        if let Some(ref file_types) = self.filter_file_types {
             let entry_type = if entry.fs.file_type.is_dir {
                 "directory"
             } else if mtk::filetype::is_video(&entry.fs.file_path) {
@@ -140,7 +142,7 @@ impl FilterSortOptions {
         }
 
         // Rating range filter
-        if let Some((min_rating, max_rating)) = self.filter.rating_range {
+        if let Some((min_rating, max_rating)) = self.filter_rating {
             if let Some(rating) = entry.db.rating() {
                 if rating < min_rating || rating > max_rating {
                     return false;
@@ -223,10 +225,8 @@ mod tests {
         let options = FilterSortOptions {
             sort_by: SortBy::Rating,
             sort_order: SortOrder::Desc,
-            filter: FilterCriteria {
-                file_types: Some(vec!["video".to_string()]),
-                rating_range: Some((3, 5)),
-            },
+            filter_file_types: Some(vec!["video".to_string()]),
+            filter_rating: Some((3, 5)),
         };
 
         let encoded = options.to_base64().unwrap();
@@ -234,8 +234,8 @@ mod tests {
         
         assert_eq!(options.sort_by, decoded.sort_by);
         assert_eq!(options.sort_order, decoded.sort_order);
-        assert_eq!(options.filter.file_types, decoded.filter.file_types);
-        assert_eq!(options.filter.rating_range, decoded.filter.rating_range);
+        assert_eq!(options.filter_file_types, decoded.filter_file_types);
+        assert_eq!(options.filter_rating, decoded.filter_rating);
     }
 
     #[test]
