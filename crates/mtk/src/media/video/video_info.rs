@@ -18,6 +18,9 @@ pub struct VideoInfo {
 }
 
 /// Extract a VideoInfo from a video file using ffprobe.
+///
+/// This is slow, prefer using the cached version in Entry::generated_notes if
+/// many are needed (e.g. during dir listings).
 pub fn get_video_info(video_path: &Path) -> Result<VideoInfo, Box<dyn std::error::Error>> {
     // Call ffprobe to get:
     // - mime type
