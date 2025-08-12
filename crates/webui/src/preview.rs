@@ -1,3 +1,5 @@
+use base64::Engine;
+
 use rocket::State;
 use rocket::http::ContentType;
 use rocket::response::Responder;
@@ -39,8 +41,9 @@ pub fn preview_get<'r, 'o>(entry_id: i64, stash: &State<Vault>) -> RawFileOrByte
     } else {
         // TODO(fyhuang): return a transparent pixel
         // data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
-        let bytes =
-            base64::decode("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==").unwrap();
+        let bytes = base64::engine::general_purpose::STANDARD
+            .decode("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
+            .unwrap();
         RawFileOrBytesResponder::Bytes(bytes, ContentType::GIF)
     }
 }

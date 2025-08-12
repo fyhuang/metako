@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-use crate::{catalog::generated_notes, file_tree::{GeneratedFile, GeneratedTree}};
+use crate::file_tree::GeneratedFile;
 
 use super::VideoInfo;
 use crate::media::ffmpeg;

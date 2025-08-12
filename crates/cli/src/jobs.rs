@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use mtk::RepoPathBuf;
 
 fn run_job_on_entries(stash: &mtk::Vault, job_type: &str, entry_iter: impl Iterator<Item = mtk::Entry>) {
-    let runner = mtk::jobs::runner::JobRunner::new(stash, mtk::jobs::registry::default_registry(stash));
+    let runner = mtk::jobs::runner::JobRunner::new(stash, mtk::jobs::registry::default_registry());
 
     for entry in entry_iter {
         let run_result = runner.run_one(entry.db.id, job_type);
