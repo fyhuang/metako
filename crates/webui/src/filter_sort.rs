@@ -1,0 +1,246 @@
+use std::collections::HashMap;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use base64::{Engine as _, engine::general_purpose};
+
+use mtk::Entry;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum SortBy {
+    Name,
+    ModTime,
+    Size,
+    Rating,
+    FileType,
+}
+
+impl Default for SortBy {
+    fn default() -> Self {
+        SortBy::Name
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum SortOrder {
+    Asc,
+    Desc,
+}
+
+impl Default for SortOrder {
+    fn default() -> Self {
+        SortOrder::Asc
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct FilterCriteria {
+    pub file_types: Option<Vec<String>>,
+    pub rating_range: Option<(i64, i64)>,
+    // TODO: filter by user notes
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FilterSortOptions {
+    pub sort_by: SortBy,
+    pub sort_order: SortOrder,
+    pub filter: FilterCriteria,
+}
+
+impl FilterSortOptions {
+    pub fn sort_by_name(&self) -> &str {
+        match self.sort_by {
+            SortBy::Name => "Name",
+            SortBy::ModTime => "ModTime", 
+            SortBy::Size => "Size",
+            SortBy::Rating => "Rating",
+            SortBy::FileType => "FileType",
+        }
+    }
+    
+    pub fn sort_order_name(&self) -> &str {
+        match self.sort_order {
+            SortOrder::Asc => "Asc",
+            SortOrder::Desc => "Desc",
+        }
+    }
+    
+    pub fn sort_url(&self, sort_by_str: &str) -> String {
+        let mut new_options = self.clone();
+        
+        // Parse the sort_by string
+        new_options.sort_by = match sort_by_str {
+            "name" => SortBy::Name,
+            "modtime" => SortBy::ModTime,
+            "size" => SortBy::Size,
+            "rating" => SortBy::Rating,
+            "type" => SortBy::FileType,
+            _ => SortBy::Name,
+        };
+        
+        // If we're clicking the same sort field, toggle the order
+        if new_options.sort_by == self.sort_by {
+            new_options.sort_order = match self.sort_order {
+                SortOrder::Asc => SortOrder::Desc,
+                SortOrder::Desc => SortOrder::Asc,
+            };
+        } else {
+            new_options.sort_order = SortOrder::Asc;
+        }
+        
+        let encoded = new_options.to_base64().unwrap_or_default();
+        format!("?sort={}", encoded)
+    }
+}
+
+impl Default for FilterSortOptions {
+    fn default() -> Self {
+        FilterSortOptions {
+            sort_by: SortBy::Name,
+            sort_order: SortOrder::Asc,
+            filter: FilterCriteria::default(),
+        }
+    }
+}
+
+impl FilterSortOptions {
+    pub fn to_base64(&self) -> Result<String, serde_json::Error> {
+        let json = serde_json::to_string(self)?;
+        Ok(general_purpose::STANDARD.encode(json.as_bytes()))
+    }
+
+    pub fn from_base64(encoded: &str) -> Result<FilterSortOptions, Box<dyn std::error::Error>> {
+        let decoded = general_purpose::STANDARD.decode(encoded)?;
+        let json = String::from_utf8(decoded)?;
+        let options = serde_json::from_str(&json)?;
+        Ok(options)
+    }
+
+    /// Apply filtering to a list of entries
+    pub fn filter_entries(&self, entries: &[Entry]) -> Vec<Entry> {
+        entries.iter().filter(|entry| self.matches_filter(entry)).cloned().collect()
+    }
+
+    /// Check if a single entry matches the filter criteria
+    fn matches_filter(&self, entry: &Entry) -> bool {
+        // File type filter
+        if let Some(ref file_types) = self.filter.file_types {
+            let entry_type = if entry.fs.file_type.is_dir {
+                "directory"
+            } else if mtk::filetype::is_video(&entry.fs.file_path) {
+                "video"
+            } else if mtk::filetype::is_image(&entry.fs.file_path) {
+                "image"
+            } else {
+                "other"
+            };
+            
+            if !file_types.contains(&entry_type.to_string()) {
+                return false;
+            }
+        }
+
+        // Rating range filter
+        if let Some((min_rating, max_rating)) = self.filter.rating_range {
+            if let Some(rating) = entry.db.rating() {
+                if rating < min_rating || rating > max_rating {
+                    return false;
+                }
+            } else {
+                // If no rating and we're filtering by rating, exclude
+                return false;
+            }
+        }
+
+        true
+    }
+
+    /// Sort a list of entries according to the sort options
+    pub fn sort_entries(&self, entries: &mut [Entry]) {
+        entries.sort_by(|a, b| {
+            // First, sort folders before files
+            let a_is_dir = a.fs.file_type.is_dir;
+            let b_is_dir = b.fs.file_type.is_dir;
+            
+            if a_is_dir && !b_is_dir {
+                return std::cmp::Ordering::Less;
+            }
+            if !a_is_dir && b_is_dir {
+                return std::cmp::Ordering::Greater;
+            }
+
+            // Then sort by the specified criteria
+            let ordering = match self.sort_by {
+                // TODO: sort should be case-insensitive
+                // TODO: name should sort by title if available, otherwise filename
+                SortBy::Name => a.fs.file_name.cmp(&b.fs.file_name),
+                SortBy::ModTime => a.fs.mod_time.cmp(&b.fs.mod_time),
+                SortBy::Size => a.fs.size_bytes.cmp(&b.fs.size_bytes),
+                SortBy::Rating => {
+                    let a_rating = a.db.rating().unwrap_or(0);
+                    let b_rating = b.db.rating().unwrap_or(0);
+                    a_rating.cmp(&b_rating)
+                },
+                SortBy::FileType => {
+                    let a_type = get_file_type_sort_key(a);
+                    let b_type = get_file_type_sort_key(b);
+                    a_type.cmp(&b_type)
+                }
+            };
+
+            match self.sort_order {
+                SortOrder::Asc => ordering,
+                SortOrder::Desc => ordering.reverse(),
+            }
+        });
+    }
+}
+
+fn get_file_type_sort_key(entry: &Entry) -> u8 {
+    if entry.fs.file_type.is_dir {
+        0
+    } else if mtk::filetype::is_video(&entry.fs.file_path) {
+        1
+    } else if mtk::filetype::is_image(&entry.fs.file_path) {
+        2
+    } else {
+        3
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_default_options() {
+        let options = FilterSortOptions::default();
+        assert_eq!(options.sort_by, SortBy::Name);
+        assert_eq!(options.sort_order, SortOrder::Asc);
+    }
+
+    #[test]
+    fn test_base64_serialization() {
+        let options = FilterSortOptions {
+            sort_by: SortBy::Rating,
+            sort_order: SortOrder::Desc,
+            filter: FilterCriteria {
+                file_types: Some(vec!["video".to_string()]),
+                rating_range: Some((3, 5)),
+            },
+        };
+
+        let encoded = options.to_base64().unwrap();
+        let decoded = FilterSortOptions::from_base64(&encoded).unwrap();
+        
+        assert_eq!(options.sort_by, decoded.sort_by);
+        assert_eq!(options.sort_order, decoded.sort_order);
+        assert_eq!(options.filter.file_types, decoded.filter.file_types);
+        assert_eq!(options.filter.rating_range, decoded.filter.rating_range);
+    }
+
+    #[test]
+    fn test_invalid_base64_returns_error() {
+        let result = FilterSortOptions::from_base64("invalid-base64");
+        assert!(result.is_err());
+    }
+}
