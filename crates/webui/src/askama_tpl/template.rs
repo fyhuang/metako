@@ -8,6 +8,7 @@ use super::filters;
 use super::partial;
 use super::partial::ListingLayout;
 use super::edit;
+use crate::filter_sort::FilterSortOptions;
 
 #[derive(Template)]
 #[template(path = "entry_list.ask.html")]
@@ -33,16 +34,18 @@ pub struct DirIndexTemplate {
     pub parent_crumbs: partial::ParentCrumbsPartial,
     pub entry_editor: edit::EntryEditorPartial,
     pub dir_listing: partial::DirListingPartial,
+    pub filter_sort_options: FilterSortOptions,
 }
 
 impl DirIndexTemplate {
-    pub fn new(dir_entry: &Entry, contents: &Vec<Entry>, layout: ListingLayout) -> DirIndexTemplate {
+    pub fn new(dir_entry: &Entry, contents: &Vec<Entry>, layout: ListingLayout, filter_sort_options: FilterSortOptions) -> DirIndexTemplate {
         DirIndexTemplate {
             entry: renderers::EntryRenderer::from(&dir_entry),
 
             parent_crumbs: partial::ParentCrumbsPartial::from(dir_entry.fs.repo_path.clone()),
             entry_editor: edit::EntryEditorPartial::from(&dir_entry.db),
             dir_listing: partial::DirListingPartial::from(contents, layout),
+            filter_sort_options,
         }
     }
 }

@@ -10,11 +10,13 @@ use mtk::filetype;
 use mtk::{Entry, RepoPathBuf, Vault};
 
 use crate::askama_tpl;
+use crate::filter_sort::FilterSortOptions;
 
-#[get("/entry/<path..>?<layout>")]
+#[get("/entry/<path..>?<layout>&<sort>")]
 pub async fn view_entry(
     path: PathBuf,
     layout: Option<String>,
+    sort: Option<String>,
     stash: &State<Vault>,
 ) -> content::RawHtml<String> {
     let mut catalog = stash.open_catalog().expect("open_catalog");
@@ -33,8 +35,9 @@ pub async fn view_entry(
 
     if entry.fs.file_type.is_dir {
         let layout = askama_tpl::ListingLayout::from_str(layout.as_deref().unwrap_or("compact-grid"));
-        println!("Layout: {:?}", layout);
-        render_dir_index(&entry, &file_tree, &mut catalog, layout)
+        let filter_sort_options = parse_sort_options(sort.as_deref());
+        println!("Layout: {:?}, Sort: {:?}", layout, filter_sort_options);
+        render_dir_index(&entry, &file_tree, &mut catalog, layout, filter_sort_options)
     } else {
         println!("File entry at {}", repo_path);
         let mut history_db = stash.open_history_db();
@@ -61,6 +64,7 @@ fn render_dir_index(
     file_tree: &mtk::file_tree::FileTree,
     catalog: &mut mtk::catalog::Catalog,
     layout: askama_tpl::ListingLayout,
+    filter_sort_options: FilterSortOptions,
 ) -> content::RawHtml<String> {
     // TODO: use scan
     let mut dir_entries = Vec::new();
@@ -80,12 +84,30 @@ fn render_dir_index(
         });
     }
 
+    // Apply filtering and sorting
+    let filtered_entries = filter_sort_options.filter_entries(&dir_entries);
+    let mut sorted_entries = filtered_entries;
+    filter_sort_options.sort_entries(&mut sorted_entries);
+
     let template = askama_tpl::DirIndexTemplate::new(
         &entry,
-        &dir_entries,
+        &sorted_entries,
         layout,
+        filter_sort_options,
     );
     content::RawHtml(template.render().unwrap())
+}
+
+fn parse_sort_options(sort_param: Option<&str>) -> FilterSortOptions {
+    match sort_param {
+        Some(encoded) => {
+            FilterSortOptions::from_base64(encoded).unwrap_or_else(|e| {
+                println!("Failed to parse sort options: {}, using defaults", e);
+                FilterSortOptions::default()
+            })
+        }
+        None => FilterSortOptions::default(),
+    }
 }
 
 fn should_hide_entry(entry: &DbEntry) -> bool {
@@ -104,10 +126,10 @@ fn should_hide_entry(entry: &DbEntry) -> bool {
 pub async fn view_entry_by_id(id: i64, stash: &State<Vault>) -> Redirect {
     let catalog = stash.open_catalog().expect("open_catalog");
     let repo_path = catalog.get_by_id(id).expect("get_by_id").repo_path;
-    Redirect::to(uri!(view_entry(PathBuf::from(repo_path.to_string()), Option::<String>::None)))
+    Redirect::to(uri!(view_entry(PathBuf::from(repo_path.to_string()), Option::<String>::None, Option::<String>::None)))
 }
 
 #[get("/")]
 pub async fn index() -> Redirect {
-    Redirect::to(uri!(view_entry("/", Option::<String>::None)))
+    Redirect::to(uri!(view_entry("/", Option::<String>::None, Option::<String>::None)))
 }

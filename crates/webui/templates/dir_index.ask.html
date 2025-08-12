@@ -10,9 +10,24 @@
 
 {{ parent_crumbs|safe }}
 
-<p><a href="?layout=grid">Grid</a> | <a href="?layout=cc">Compact</a></p>
+<div>
+    <p><strong>Layout:</strong> <a href="?layout=grid">Grid</a> | <a href="?layout=cc">Compact</a></p>
 
-<p><a href="/surprise/{{entry.repo_path|urlencode_parts}}">Surprise Me</a></p>
+    <p><strong>Sort:</strong>
+        <a href="{{ filter_sort_options.sort_url(" name") }}">Name{% if filter_sort_options.sort_by_name() == "Name" %}
+            {% if filter_sort_options.sort_order_name() == "Asc" %}▲{% else %}▼{% endif %}{% endif %}</a> |
+        <a href="{{ filter_sort_options.sort_url(" modtime") }}">Modified{% if filter_sort_options.sort_by_name() ==
+            "ModTime" %} {% if filter_sort_options.sort_order_name() == "Asc" %}▲{% else %}▼{% endif %}{% endif %}</a> |
+        <a href="{{ filter_sort_options.sort_url(" size") }}">Size{% if filter_sort_options.sort_by_name() == "Size" %}
+            {% if filter_sort_options.sort_order_name() == "Asc" %}▲{% else %}▼{% endif %}{% endif %}</a> |
+        <a href="{{ filter_sort_options.sort_url(" rating") }}">Rating{% if filter_sort_options.sort_by_name() ==
+            "Rating" %} {% if filter_sort_options.sort_order_name() == "Asc" %}▲{% else %}▼{% endif %}{% endif %}</a> |
+        <a href="{{ filter_sort_options.sort_url(" type") }}">Type{% if filter_sort_options.sort_by_name() == "FileType"
+            %} {% if filter_sort_options.sort_order_name() == "Asc" %}▲{% else %}▼{% endif %}{% endif %}</a>
+    </p>
+
+    <p><a href="/surprise/{{entry.repo_path|urlencode_parts}}">Surprise Me</a></p>
+</div>
 
 
 {{ dir_listing|safe }}
