@@ -79,11 +79,11 @@ impl FilterSortOptions {
         
         // Parse the sort_by string
         new_options.sort_by = match sort_by_str {
-            "name" => SortBy::Name,
-            "modtime" => SortBy::ModTime,
-            "size" => SortBy::Size,
-            "rating" => SortBy::Rating,
-            "type" => SortBy::FileType,
+            "Name" => SortBy::Name,
+            "ModTime" => SortBy::ModTime,
+            "Size" => SortBy::Size,
+            "Rating" => SortBy::Rating,
+            "File Type" => SortBy::FileType,
             _ => SortBy::Name,
         };
         
@@ -211,7 +211,7 @@ mod tests {
             ..Default::default()
         };
         
-        let new_options = options.with_sort("name");
+        let new_options = options.with_sort("Name");
         
         // Should toggle to descending
         assert_eq!(new_options.sort_by, SortBy::Name);
@@ -226,7 +226,7 @@ mod tests {
             ..Default::default()
         };
         
-        let new_options = options.with_sort("size");
+        let new_options = options.with_sort("Size");
         
         // Should switch to Size and reset to Asc
         assert_eq!(new_options.sort_by, SortBy::Size);

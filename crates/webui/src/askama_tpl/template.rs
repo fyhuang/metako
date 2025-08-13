@@ -2,13 +2,13 @@ use askama::Template;
 
 use mtk::FilerConfig;
 use mtk::Entry;
+use mtk::filter_sort::FilterSortOptions;
 
 use super::renderers;
 use super::filters;
 use super::partial;
 use super::partial::ListingLayout;
 use super::edit;
-use mtk::filter_sort::FilterSortOptions;
 
 #[derive(Template)]
 #[template(path = "entry_list.ask.html")]
