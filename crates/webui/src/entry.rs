@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use askama::Template;
 
 use mtk::catalog::DbEntry;
-use rocket::response::{content, Redirect};
 use rocket::State;
+use rocket::response::{Redirect, content};
 
 use mtk::filetype;
 use mtk::{Entry, RepoPathBuf, Vault};
@@ -32,7 +32,8 @@ pub async fn view_entry(
     };
 
     if entry.fs.file_type.is_dir {
-        let layout = askama_tpl::ListingLayout::from_str(layout.as_deref().unwrap_or("compact-grid"));
+        let layout =
+            askama_tpl::ListingLayout::from_str(layout.as_deref().unwrap_or("compact-grid"));
         println!("Layout: {:?}", layout);
         render_dir_index(&entry, &file_tree, &mut catalog, layout)
     } else {
@@ -40,7 +41,8 @@ pub async fn view_entry(
         let mut history_db = stash.open_history_db();
         let mut entry_renderer = askama_tpl::EntryRenderer::from(&entry);
         if filetype::is_video(&entry.fs.file_path) {
-            entry_renderer.video_player = Some(askama_tpl::VideoPlayerRenderer::new(&stash, &entry));
+            entry_renderer.video_player =
+                Some(askama_tpl::VideoPlayerRenderer::new(&stash, &entry));
         }
         let template = askama_tpl::ViewEntryTemplate::new(
             &stash.config,
@@ -80,11 +82,7 @@ fn render_dir_index(
         });
     }
 
-    let template = askama_tpl::DirIndexTemplate::new(
-        &entry,
-        &dir_entries,
-        layout,
-    );
+    let template = askama_tpl::DirIndexTemplate::new(&entry, &dir_entries, layout);
     content::RawHtml(template.render().unwrap())
 }
 
@@ -104,7 +102,10 @@ fn should_hide_entry(entry: &DbEntry) -> bool {
 pub async fn view_entry_by_id(id: i64, stash: &State<Vault>) -> Redirect {
     let catalog = stash.open_catalog().expect("open_catalog");
     let repo_path = catalog.get_by_id(id).expect("get_by_id").repo_path;
-    Redirect::to(uri!(view_entry(PathBuf::from(repo_path.to_string()), Option::<String>::None)))
+    Redirect::to(uri!(view_entry(
+        PathBuf::from(repo_path.to_string()),
+        Option::<String>::None
+    )))
 }
 
 #[get("/")]
