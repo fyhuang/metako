@@ -5,7 +5,7 @@ mod range_limited_file;
 pub mod raw_file_responder;
 
 // Filter and sort support
-pub mod filter_sort;
+pub mod filter_sort_web;
 
 // Templates
 pub mod askama_tpl;

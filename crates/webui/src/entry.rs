@@ -8,9 +8,10 @@ use rocket::State;
 
 use mtk::filetype;
 use mtk::{Entry, RepoPathBuf, Vault};
+use mtk::filter_sort::FilterSortOptions;
 
 use crate::askama_tpl;
-use crate::filter_sort::FilterSortOptions;
+use crate::filter_sort_web::parse_sort_options;
 
 #[get("/entry/<path..>?<layout>&<sort>")]
 pub async fn view_entry(
@@ -98,17 +99,6 @@ fn render_dir_index(
     content::RawHtml(template.render().unwrap())
 }
 
-fn parse_sort_options(sort_param: Option<&str>) -> FilterSortOptions {
-    match sort_param {
-        Some(encoded) => {
-            FilterSortOptions::from_base64(encoded).unwrap_or_else(|e| {
-                println!("Failed to parse sort options: {}, using defaults", e);
-                FilterSortOptions::default()
-            })
-        }
-        None => FilterSortOptions::default(),
-    }
-}
 
 fn should_hide_entry(entry: &DbEntry) -> bool {
     let hidden_special_entry_type = entry.special_type.as_ref().is_some_and(|t| match t {

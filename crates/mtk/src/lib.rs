@@ -35,6 +35,7 @@ pub mod userdata;
 // Browsing
 pub mod browse;
 pub mod query;
+pub mod filter_sort;
 
 // Media-specific features
 pub mod preview;

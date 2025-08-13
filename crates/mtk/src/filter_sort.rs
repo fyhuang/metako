@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
-use base64::{Engine as _, engine::general_purpose};
-
-use mtk::Entry;
+use crate::Entry;
 
 fn is_default<T>(value: &T) -> bool
 where
@@ -37,7 +35,7 @@ impl Default for SortOrder {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct FilterSortOptions {
     // Sort options
     #[serde(default)]
@@ -76,7 +74,7 @@ impl FilterSortOptions {
         }
     }
     
-    pub fn sort_url(&self, sort_by_str: &str) -> String {
+    pub fn with_sort(&self, sort_by_str: &str) -> Self {
         let mut new_options = self.clone();
         
         // Parse the sort_by string
@@ -99,22 +97,7 @@ impl FilterSortOptions {
             new_options.sort_order = SortOrder::Asc;
         }
         
-        let encoded = new_options.to_base64().unwrap_or_default();
-        format!("?sort={}", encoded)
-    }
-}
-
-impl FilterSortOptions {
-    pub fn to_base64(&self) -> Result<String, serde_json::Error> {
-        let json = serde_json::to_string(self)?;
-        Ok(general_purpose::STANDARD.encode(json.as_bytes()))
-    }
-
-    pub fn from_base64(encoded: &str) -> Result<FilterSortOptions, Box<dyn std::error::Error>> {
-        let decoded = general_purpose::STANDARD.decode(encoded)?;
-        let json = String::from_utf8(decoded)?;
-        let options = serde_json::from_str(&json)?;
-        Ok(options)
+        new_options
     }
 
     /// Apply filtering to a list of entries
@@ -128,9 +111,9 @@ impl FilterSortOptions {
         if let Some(ref file_types) = self.filter_file_types {
             let entry_type = if entry.fs.file_type.is_dir {
                 "directory"
-            } else if mtk::filetype::is_video(&entry.fs.file_path) {
+            } else if crate::filetype::is_video(&entry.fs.file_path) {
                 "video"
-            } else if mtk::filetype::is_image(&entry.fs.file_path) {
+            } else if crate::filetype::is_image(&entry.fs.file_path) {
                 "image"
             } else {
                 "other"
@@ -200,9 +183,9 @@ impl FilterSortOptions {
 fn get_file_type_sort_key(entry: &Entry) -> u8 {
     if entry.fs.file_type.is_dir {
         0
-    } else if mtk::filetype::is_video(&entry.fs.file_path) {
+    } else if crate::filetype::is_video(&entry.fs.file_path) {
         1
-    } else if mtk::filetype::is_image(&entry.fs.file_path) {
+    } else if crate::filetype::is_image(&entry.fs.file_path) {
         2
     } else {
         3
@@ -221,26 +204,54 @@ mod tests {
     }
 
     #[test]
-    fn test_base64_serialization() {
+    fn test_with_sort_toggle_same_field() {
         let options = FilterSortOptions {
-            sort_by: SortBy::Rating,
-            sort_order: SortOrder::Desc,
-            filter_file_types: Some(vec!["video".to_string()]),
-            filter_rating: Some((3, 5)),
+            sort_by: SortBy::Name,
+            sort_order: SortOrder::Asc,
+            ..Default::default()
         };
-
-        let encoded = options.to_base64().unwrap();
-        let decoded = FilterSortOptions::from_base64(&encoded).unwrap();
         
-        assert_eq!(options.sort_by, decoded.sort_by);
-        assert_eq!(options.sort_order, decoded.sort_order);
-        assert_eq!(options.filter_file_types, decoded.filter_file_types);
-        assert_eq!(options.filter_rating, decoded.filter_rating);
+        let new_options = options.with_sort("name");
+        
+        // Should toggle to descending
+        assert_eq!(new_options.sort_by, SortBy::Name);
+        assert_eq!(new_options.sort_order, SortOrder::Desc);
     }
 
     #[test]
-    fn test_invalid_base64_returns_error() {
-        let result = FilterSortOptions::from_base64("invalid-base64");
-        assert!(result.is_err());
+    fn test_with_sort_different_field() {
+        let options = FilterSortOptions {
+            sort_by: SortBy::Name,
+            sort_order: SortOrder::Desc,
+            ..Default::default()
+        };
+        
+        let new_options = options.with_sort("size");
+        
+        // Should switch to Size and reset to Asc
+        assert_eq!(new_options.sort_by, SortBy::Size);
+        assert_eq!(new_options.sort_order, SortOrder::Asc);
+    }
+
+    #[test]
+    fn test_compact_serialization() {
+        // Test that default values are omitted in serialization
+        let default_options = FilterSortOptions::default();
+        let json = serde_json::to_string(&default_options).unwrap();
+        
+        // Should be empty object since all fields have default values
+        assert_eq!(json, "{}");
+    }
+
+    #[test]
+    fn test_sort_by_name_methods() {
+        let options = FilterSortOptions {
+            sort_by: SortBy::ModTime,
+            sort_order: SortOrder::Desc,
+            ..Default::default()
+        };
+        
+        assert_eq!(options.sort_by_name(), "ModTime");
+        assert_eq!(options.sort_order_name(), "Desc");
     }
 }
