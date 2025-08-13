@@ -120,8 +120,8 @@ impl DbEntry {
     }
 
     // Well-known fields
-    pub fn title(&self) -> String {
-        self.get("title").ok().flatten().unwrap_or("".to_string())
+    pub fn title(&self) -> Option<String> {
+        self.get("title").ok().flatten()
     }
 
     pub fn description(&self) -> String {
@@ -242,12 +242,12 @@ mod tests {
     #[test]
     fn test_title() {
         let mut row = DbEntry::default(0, RepoPathBuf::from("test"));
-        assert_eq!("", row.title());
+        assert!(row.title().is_none());
 
         row.notes_user = serde_json::json!({
             "title": "user title",
         });
-        assert_eq!("user title", row.title());
+        assert_eq!("user title", row.title().unwrap());
     }
 
     #[test]

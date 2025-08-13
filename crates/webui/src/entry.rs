@@ -82,8 +82,31 @@ fn render_dir_index(
         });
     }
 
+    sort_entries_name(&mut dir_entries);
+
     let template = askama_tpl::DirIndexTemplate::new(&entry, &dir_entries, layout);
     content::RawHtml(template.render().unwrap())
+}
+
+fn sort_entries_name(entries: &mut [Entry]) {
+    entries.sort_by(|a, b| {
+        // First, sort folders before files
+        let a_is_dir = a.fs.file_type.is_dir;
+        let b_is_dir = b.fs.file_type.is_dir;
+
+        if a_is_dir && !b_is_dir {
+            return std::cmp::Ordering::Less;
+        }
+        if !a_is_dir && b_is_dir {
+            return std::cmp::Ordering::Greater;
+        }
+
+        // Then sort by name, case-insensitive
+        let a_name = a.display_title().to_ascii_lowercase();
+        let b_name = b.display_title().to_ascii_lowercase();
+
+        a_name.cmp(&b_name)
+    });
 }
 
 fn should_hide_entry(entry: &DbEntry) -> bool {

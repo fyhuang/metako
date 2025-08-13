@@ -5,15 +5,6 @@ use mtk::{catalog, file_tree};
 
 use mtk::filetype;
 
-fn get_display_title(entry: &Entry) -> String {
-    let catalog_title = entry.db.title();
-    if catalog_title.is_empty() {
-        entry.fs.file_name.clone()
-    } else {
-        catalog_title
-    }
-}
-
 #[derive(Clone, Serialize)]
 pub struct EntryRenderer {
     pub repo_path: String,
@@ -44,7 +35,7 @@ impl EntryRenderer {
             repo_path: repo_path.to_string(),
             parent_path: entry.fs.repo_path.parent_or_empty().0,
             entry_id: entry.db.id,
-            display_title: get_display_title(entry).to_string(),
+            display_title: entry.display_title(),
             file_name: entry.fs.repo_path.file_name().to_string(),
             file_type: entry.fs.file_type.clone(),
             is_image: filetype::is_image(&entry.fs.file_path),

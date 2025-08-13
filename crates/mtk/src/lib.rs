@@ -23,6 +23,16 @@ pub struct Entry {
     pub db: catalog::DbEntry,
 }
 
+impl Entry {
+    pub fn display_title(&self) -> String {
+        let catalog_title = self.db.title();
+        catalog_title.unwrap_or_else(|| {
+            self.fs.file_name.clone()
+        })
+    }
+}
+
+
 // Vault
 pub mod vault;
 pub use vault::Vault;
