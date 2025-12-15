@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=MTK open protocol
+Comment=Open mtk:// links that point to a Metako vault.
+Exec=mtk-open %u
+TryExec=mtk-open
+Icon=mtk
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/mtk;
+NoDisplay=true

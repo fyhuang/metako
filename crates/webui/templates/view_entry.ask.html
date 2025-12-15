@@ -55,6 +55,7 @@
     <dt class="col-3">Local Paths</dt>
     <dd class="col-9">
         <p><a href="file://{{local_path_prefix}}/{{entry.repo_path}}" onclick="window.writeToClipboard('{{local_path_prefix}}/{{entry.repo_path}}'); event.preventDefault()"><i class="bi bi-clipboard-plus"></i> {{local_path_prefix}}/{{entry.repo_path}}</a></p>
+        <p><a href="mtk://{{local_path_prefix}}/{{entry.repo_path}}">(open locally) {{local_path_prefix}}/{{entry.repo_path}}</a></p>
     </dd>
 
     {% if !entry.catalog.linked_urls().is_empty() %}

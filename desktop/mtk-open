@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+
+url_raw=sys.argv[1][6:]
+print(url_raw)
+
+# urldecode
+import urllib.parse
+url = urllib.parse.unquote(url_raw)
+#url = url_raw
+print(url)
+
+#if [[ ! $url =~ ^https?:// ]]; then
+#    echo "protocol not allowed"
+#    exit 1
+#fi
+
+#subprocess.call(["vlc", "--open", url])
+subprocess.call(["vlc", url])
