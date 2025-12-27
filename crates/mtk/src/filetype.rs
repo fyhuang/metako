@@ -27,3 +27,7 @@ pub fn is_document(path: &Path) -> bool {
         false
     }
 }
+
+pub fn is_media(path: &Path) -> bool {
+    is_video(path) || is_image(path) || is_document(path)
+}

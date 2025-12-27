@@ -20,3 +20,6 @@ rusqlite = { version = "0.36.0", features = ["bundled"] }
 
 regex = "1.11.1"  # search
 rand = "0.9.1"  # sampler/surprise
+
+# For save module
+url = "2.5"
