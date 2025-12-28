@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use clap::{command, Parser};
 
 mod jobs;
+mod test;
 
 #[derive(clap::Args)]
 struct InitCommand {
@@ -32,6 +33,10 @@ impl InitCommand {
 enum Commands {
     Init(InitCommand),
     RunJobs(jobs::RunJobsCommand),
+    Test {
+        #[command(subcommand)]
+        command: test::TestSubcommand,
+    },
 }
 
 #[derive(Parser)]
@@ -47,5 +52,6 @@ fn main() {
     match &cli.command {
         Commands::Init(init) => init.run(),
         Commands::RunJobs(run_jobs) => run_jobs.run(&mtk::Vault::from_cwd()),
+        Commands::Test { command } => command.run(),
     }
 }
