@@ -14,6 +14,11 @@
 
 <p><a href="/surprise/{{entry.repo_path|urlencode_parts}}">Surprise Me</a></p>
 
+<details>
+    <summary>Save URL</summary>
+    {{ save_form|safe }}
+</details>
+
 
 {{ dir_listing|safe }}
 

@@ -25,3 +25,4 @@ chrono = "0.4.41"
 askama = "0.14.0"
 
 base64 = "0.22.1"  # For preview
+url = "2.5.4"  # For save module

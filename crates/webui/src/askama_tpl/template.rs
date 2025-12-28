@@ -8,6 +8,7 @@ use super::filters;
 use super::partial;
 use super::partial::ListingLayout;
 use super::edit;
+use super::save;
 
 #[derive(Template)]
 #[template(path = "entry_list.ask.html")]
@@ -33,6 +34,7 @@ pub struct DirIndexTemplate {
     pub parent_crumbs: partial::ParentCrumbsPartial,
     pub entry_editor: edit::EntryEditorPartial,
     pub dir_listing: partial::DirListingPartial,
+    pub save_form: save::SaveInlineFragment,
 }
 
 impl DirIndexTemplate {
@@ -43,6 +45,9 @@ impl DirIndexTemplate {
             parent_crumbs: partial::ParentCrumbsPartial::from(dir_entry.fs.repo_path.clone()),
             entry_editor: edit::EntryEditorPartial::from(&dir_entry.db),
             dir_listing: partial::DirListingPartial::from(contents, layout),
+            save_form: save::SaveInlineFragment {
+                current_path: dir_entry.fs.repo_path.0.clone(),
+            },
         }
     }
 }

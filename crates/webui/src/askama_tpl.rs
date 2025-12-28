@@ -4,6 +4,7 @@ mod renderers;
 mod partial;
 mod edit;
 mod template;
+mod save;
 
 // TODO(fyhuang): make this private
 pub use partial::ListingLayout;
@@ -15,6 +16,8 @@ pub use template::DirIndexTemplate;
 pub use template::ViewEntryTemplate;
 
 pub use edit::EntryEditorPartial;
+pub use save::SaveInlineFragment;
+pub use save::SaveResultFragment;
 
 fn nibble_to_hex(nibble: u8) -> u8 {
     debug_assert!(nibble < 16);

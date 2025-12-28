@@ -1,0 +1,25 @@
+<form
+    class="save-form"
+    hx-post="/xapi/save/download"
+    hx-target="#save-result"
+    hx-swap="innerHTML"
+    hx-indicator="#save-progress"
+    hx-disabled-elt="button"
+>
+    <input type="hidden" name="current_path" value="{{ current_path }}">
+    <div class="save-form-row">
+        <input
+            id="save-url-input"
+            class="save-url-input"
+            type="text"
+            name="url"
+            placeholder="Paste URL here..."
+            autofocus>
+        <button id="save-paste-btn" type="button">Paste URL</button>
+        <button type="submit">Download</button>
+    </div>
+    <div class="save-progress-row">
+        <span id="save-progress" class="htmx-indicator" aria-live="polite">Working...</span>
+    </div>
+</form>
+<div id="save-result"></div>
