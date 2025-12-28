@@ -1,6 +1,7 @@
 import { currEntry } from './entry.mts';
 import * as entry_list from './entry_list.mts';
 import * as video from './video.mts';
+import * as save from './save.mts';
 
 addEventListener('DOMContentLoaded', () => {
     // TODO: only if the layout is cc-grid
@@ -14,6 +15,10 @@ addEventListener('DOMContentLoaded', () => {
         return;
     }
     video.setupVideoPlayer();
+});
+
+addEventListener('DOMContentLoaded', () => {
+    save.setupSaveForm();
 });
 
 // Utility function for writing to clipboard
